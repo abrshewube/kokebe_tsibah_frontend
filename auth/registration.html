@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.12/antd.min.css">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+  .registration-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+  }
+  .registration-info {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #1890ff;
+  }
+  .registration-info i {
+    margin-right: 5px;
+  }
+  .registration-card {
+    width: 450px; /* card width */
+    padding: 30px;
+    border-radius: 15px; /* rounded corners */
+    border: 2px solid #1890ff; /* blue border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px; /* space from top */
+  }
+  .input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .input-group i {
+    margin-right: 10px;
+    font-size: 20px; /* icon size */
+    color: #1890ff; /* icon color */
+  }
+  .input-group input,
+  .input-group select {
+    flex: 1; /* take remaining width */
+    padding: 10px;
+    border-radius: 5px; /* rounded corners */
+    border: 1px solid #ccc; /* gray border */
+  }
+  .input-group input[type="password"] {
+    margin-right: 10px; /* space between password and confirm password */
+  }
+  .login-link {
+    text-align: center;
+    margin-top: 20px;
+  }
+  .login-link a {
+    color: #000;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  .login-link i {
+    margin-right: 5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="registration-container">
+  <div class="registration-card">
+    <i class="fas fa-info-circle"></i>
+    <h3>Dear Student, Register to KokebeTsibah School Website to access different resources .</h3>
+    <form id="registration-form">
+      <div class="input-group">
+        <i class="fas fa-user"></i>
+        <input type="text" placeholder="Full Name" name="fullName" required>
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-user"></i>
+        <input type="text" placeholder="Username" name="username" required>
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" placeholder="Password" name="password" required>
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" placeholder="Confirm Password" name="confirmPassword" required>
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-graduation-cap"></i>
+        <select name="grade" required>
+          <option value="" disabled selected>Select Grade</option>
+          <option value="9">Grade 9</option>
+          <option value="10">Grade 10</option>
+          <option value="11">Grade 11</option>
+          <option value="12">Grade 12</option>
+        </select>
+      </div>
+            
+      <button type="submit" style="width: 100%; background-color: #1890ff; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px;">
+        <span style="margin-right: 8px;"><i class="fas fa-user-plus"></i></span>Register
+      </button>
+    </form>
+
+    <div class="login-link">
+      <i class="fas fa-sign-in-alt"></i>
+      <span>Already have an account? <a href="login.html">Login</a></span>
+    </div>
+  </div>
+</div>
+<!-- Add a success popup element -->
+<div id="success-popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #52c41a; color: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);">
+  <p>Registration successful!</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.12/antd.min.js"></script>
+<script>
+  // Define the registerUser function directly in the HTML file
+  const API_URL = 'http://localhost:3000/api/users';
+
+  async function registerUser(fullName, username, password, grade) {
+    try {
+      const response = await fetch(`${API_URL}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fullName, username, password, grade }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error registering user:', error.message);
+      throw error;
+    }
+  }
+
+  // Add event listener for form submission
+    // Add event listener for form submission
+    document.getElementById('registration-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+  
+      const fullName = this.elements.fullName.value;
+      const username = this.elements.username.value;
+      const password = this.elements.password.value;
+      const confirmPassword = this.elements.confirmPassword.value;
+      const grade = this.elements.grade.value;
+  
+      // Remove any existing error messages
+      const errorMessages = document.querySelectorAll('.error-message');
+      errorMessages.forEach(errorMessage => errorMessage.remove());
+  
+      if (password !== confirmPassword) {
+        // Display error message for password mismatch
+        const confirmPasswordInput = document.querySelector('input[name="confirmPassword"]');
+        confirmPasswordInput.insertAdjacentHTML('afterend', '<div class="error-message" style="color: red;">Passwords do not match</div>');
+        return;
+      }
+  
+      try {
+        const result = await registerUser(fullName, username, password, grade);
+        
+        // Display success popup
+        document.getElementById('success-popup').style.display = 'block';
+        
+        // Store token in localStorage
+        localStorage.setItem('token', result.token);
+        
+        // Redirect to index.html after a delay
+        setTimeout(() => {
+          window.location.href = '/frontend/index.html';
+ 
+
+        }, 2000); // 2 seconds delay
+  
+      } catch (error) {
+        console.error('Registration failed:', error.message);
+        
+        // Display specific error messages from backend
+        if (error.message.includes('Username already exists')) {
+          const usernameInput = document.querySelector('input[name="username"]');
+          usernameInput.insertAdjacentHTML('afterend', '<div class="error-message" style="color: red;">Username already exists</div>');
+        } else {
+          alert('Registration failed. Please try again.');
+        }
+      }
+    });
+</script>
+</body>
+</html>

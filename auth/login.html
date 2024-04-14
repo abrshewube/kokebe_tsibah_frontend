@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.12/antd.min.css">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .login-card {
+    width: 450px; /* elongated */
+    padding: 30px;
+    border-radius: 15px; /* rounded corners */
+    border: 2px solid #1890ff; /* blue border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative; /* Add position relative for error message */
+  }
+  .input-group i {
+    margin-right: 10px;
+    font-size: 20px; /* increased font size */
+    color: #1890ff; /* blue color */
+  }
+  .input-group input {
+    flex: 1; /* take remaining width */
+    padding: 10px;
+  }
+  .error-message {
+    position: absolute;
+    bottom: -20px; /* Adjust as needed */
+    left: 0;
+    color: red;
+    font-size: 12px;
+  }
+  .success-message {
+    color: green;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <div class="login-card">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <img src="https://cdn.dribbble.com/users/204025/screenshots/842087/media/9eb673732b10a34ac5df15c1c3e276da.gif" alt="Avatar" style="width: 100px; border-radius: 50%;">
+    </div>
+
+    <form id="login-form">
+      <div class="input-group">
+        <i class="fas fa-user"></i>
+        <input type="text" placeholder="Enter Username" name="username" required>
+        <div class="error-message" id="username-error"></div> <!-- Error message -->
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" placeholder="Enter Password" name="password" required>
+        <div class="error-message" id="password-error"></div> <!-- Error message -->
+      </div>
+            
+      <button type="submit" style="width: 100%; background-color: #1890ff; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px;">
+        <span style="margin-right: 8px;"><i class="fas fa-sign-in-alt"></i></span>Login
+      </button>
+      <div style="text-align: center; margin-top: 10px;">
+        <span>or <a href="Registration.html">register</a></span>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
+        <label style="margin: 0;"><input type="checkbox" checked="checked" name="remember"> Remember me</label>
+        <a href="ForgotPassword.html">Forgot password?</a>
+      </div>
+    </form>
+
+    <!-- Success message -->
+    <div class="success-message" id="success-message"></div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('login-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const username = this.elements.username.value;
+    const password = this.elements.password.value;
+
+    try {
+      const response = await fetch('http://localhost:3000/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const data = await response.json();
+      // Assume the backend returns a token upon successful login
+      const token = data.token;
+      // Store the token in localStorage for further authentication
+      localStorage.setItem('token', token);
+      // Redirect user to dashboard or any other page
+      window.location.href = '/frontend/index.html';
+
+    } catch (error) {
+      console.error('Login failed:', error.message);
+      if (error.message === 'Login failed') {
+        document.getElementById('password-error').textContent = 'Invalid username or password';
+      }
+    }
+  });
+</script>
+</body>
+</html>
