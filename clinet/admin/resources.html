@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Resource</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Include Tailwind CSS -->
+    <style>
+        .progress-bar {
+            border: 2px solid #e2e8f0;
+            height: 20px;
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #3182ce;
+            border-radius: 5px;
+        }
+
+        /* Card Styling */
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .card-header {
+            background-color: #f0f4f8;
+            border-bottom: 1px solid #e2e8f0;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            padding: 1.25rem;
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .card-footer {
+            background-color: #f0f4f8;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col justify-center items-center">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="text-3xl font-bold">Create New Resource</h1>
+        </div>
+        <div class="card-body">
+            <p class="text-gray-700 mb-6">Please fill out the form below to upload a new resource.</p>
+            <div class="flex flex-wrap">
+                <div class="w-full md:w-1/2 p-4">
+                    <form id="resourceForm" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label for="title" class="block text-gray-700">Title:</label>
+                            <input type="text" id="title" name="title" required
+                                class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="category" class="block text-gray-700">Category:</label>
+                            <select id="category" name="category" required
+                                class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500">
+                                <option value="text book">Text Book</option>
+                                <option value="teacher guide">Teacher Guide</option>
+                                <option value="teacher notes">Teacher Notes</option>
+                                <option value="worksheets">Worksheets</option>
+                                <option value="exams">Exams</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="gradeLevel" class="block text-gray-700">Grade Level:</label>
+                            <input type="number" id="gradeLevel" name="gradeLevel" min="9" max="12" required
+                                class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500">
+                        </div>
+                    </form>
+                </div>
+                <div class="w-full md:w-1/2 p-4">
+                    <div class="mb-4">
+                        <label for="description" class="block text-gray-700">Description:</label>
+                        <textarea id="description" name="description" rows="6" required
+                            class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="file" class="block text-gray-700">File:</label>
+                        <input type="file" id="file" name="file" accept=".pdf,.doc,.docx" required
+                            class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <div class="progress-bar">
+                            <div id="progressBar" class="progress-bar-fill"></div>
+                        </div>
+                        <div id="progressText" class="text-sm text-gray-700 mt-2">0% uploaded</div>
+                    </div>
+                    <div>
+                        <div id="successMessage" class="text-green-600 font-bold"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button id="uploadButton"
+                class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Upload
+                Resource</button>
+        </div>
+    </div>
+
+    <script>
+        const uploadButton = document.getElementById('uploadButton');
+    
+        uploadButton.addEventListener('click', async () => {
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('gradeLevel', document.getElementById('gradeLevel').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('file', document.getElementById('file').files[0]);
+    
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const successMessage = document.getElementById('successMessage');
+    
+            const token = localStorage.getItem('token'); // Retrieve token from localStorage
+    
+            const response = await fetch('http://localhost:3000/api/resources/upload', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${token}` // Include token in Authorization header
+                },
+                onUploadProgress: (progressEvent) => {
+                    const { loaded, total } = progressEvent;
+                    const percentCompleted = Math.round((loaded * 100) / total);
+                    progressBar.style.width = percentCompleted + '%';
+                    progressText.innerText = percentCompleted + '% uploaded';
+                }
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                successMessage.innerText = data.message;
+                setTimeout(() => {
+                    successMessage.innerText = '';
+                }, 1000); // Remove success message after 1 second
+            } else {
+                const errorMessage = await response.text();
+                alert(`Error: ${errorMessage}`);
+            }
+        });
+    </script>
+    
+</body>
+
+</html>

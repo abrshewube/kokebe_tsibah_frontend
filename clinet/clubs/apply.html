@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply to Join the Club</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <div class="container mx-auto py-8 px-4">
+        <h1 class="text-3xl font-semibold text-center mb-8">Apply to Join the Club</h1>
+        <button onclick="goBack()" class="absolute top-4 left-4 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Back</button>
+        <form id="applicationForm" class="max-w-lg mx-auto bg-white rounded-lg shadow-md overflow-hidden p-8 mt-8">
+            <div class="mb-4">
+                <label for="reason" class="block text-gray-700 text-sm font-bold mb-2">Reason for Joining:</label>
+                <textarea id="reason" name="reason" class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none" rows="4" placeholder="Enter your reason for joining the club" required></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="contribution" class="block text-gray-700 text-sm font-bold mb-2">Contribution:</label>
+                <textarea id="contribution" name="contribution" class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none" rows="4" placeholder="Enter how you can contribute to the club" required></textarea>
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Apply
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Function to handle form submission
+        document.getElementById('applicationForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            try {
+                // Extract user ID and club ID from URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                
+                const userId = urlParams.get('userId');
+               
+                const clubId = urlParams.get('clubId');
+
+                // Retrieve authentication token from local storage
+                const authToken = localStorage.getItem('token');
+                if (!authToken) {
+                    // Redirect the user to the login page if token is not available
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                // Get form data
+                const reason = document.getElementById('reason').value;
+                const contribution = document.getElementById('contribution').value;
+
+                // Send a POST request to apply for the club with authentication token
+                const response = await fetch('http://localhost:3000/api/club-admissions/apply', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}` // Include the authentication token in the request headers
+                    },
+                    body: JSON.stringify({
+                        userId,
+                        clubId,
+                        reason,
+                        contribution
+                    })
+                });
+
+                if (response.ok) {
+                    // Application submitted successfully
+                    alert('Application submitted successfully');
+                } else {
+                    // Display error message if application submission failed
+                    const errorMessage = await response.text();
+                    alert(`Error: ${errorMessage}`);
+                }
+            } catch (error) {
+                console.error('Error applying to club:', error);
+                alert('An error occurred while applying to the club');
+            }
+        });
+
+        // Function to navigate back
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+
+</html>

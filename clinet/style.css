@@ -399,7 +399,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: url(./assets//images//school.jpg) fixed no-repeat;
+    background: url(./assets//images//school.jpg) no-repeat;
     background-position: center;
     background-size: cover;
     background-color: rgba(121, 111, 111, 0.5); /* Adjust the opacity here */
@@ -511,13 +511,13 @@
     animation: topSlide 1s ease-out;
  }
  
- @keyframes topSlide {
+ /* @keyframes topSlide {
     from{margin-top: -20%; opacity: 0;}
     to{margin-top: 0%; opacity: 1;}
  
     
  }
- 
+  */
  .coverDiv .mainDiv .mainSec>h1{
     font-size: 70px;
     text-align: center;

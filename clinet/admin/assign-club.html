@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Club Leader</title>
+    <!-- Add Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-4">
+    <h1 class="text-3xl font-bold mb-4">Assign Club Leader</h1>
+    <form id="assignLeaderForm" class="max-w-lg bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="clubId">
+                Club ID:
+            </label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="clubId" name="clubId" type="text" placeholder="Club ID">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="userId">
+                User ID (Leader):
+            </label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="userId" name="userId" type="text" placeholder="User ID (Leader)">
+        </div>
+        <div class="flex items-center justify-between">
+            <button id="assignLeaderBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                Assign Leader
+            </button>
+        </div>
+    </form>
+
+    <script>
+        // Fetch token from localStorage
+        const token = localStorage.getItem('token');
+
+        // Function to assign leader
+        async function assignLeader() {
+            try {
+                const clubId = document.getElementById('clubId').value;
+                const userId = document.getElementById('userId').value;
+                
+                const response = await fetch('http://localhost:3000/api/clubs/assign-leader', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ clubId, userId })
+                });
+                const data = await response.json();
+                alert(data.message); // Display success message
+            } catch (error) {
+                console.error('Error assigning leader:', error);
+            }
+        }
+
+        // Add event listener to assignLeaderBtn
+        document.getElementById('assignLeaderBtn').addEventListener('click', assignLeader);
+    </script>
+</body>
+</html>

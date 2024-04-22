@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resources</title>
-    <!-- Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Status</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"> <!-- Font Awesome -->
+  <style>
+    /* Custom Styles */
+    .alert-danger {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+      color: #721c24;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+  </style>
 </head>
-
 <body class="bg-gray-100">
-    <!-- Navigation -->
-<nav class="bg-white shadow-lg py-2">
+  <!-- Navigation -->
+  <!-- Navigation -->
+  <nav class="bg-white shadow-lg py-2">
     <div class="container mx-auto px-4 flex justify-between items-center">
         <!-- Logo/Home Link -->
         <a href="#" class="flex items-center">
@@ -29,7 +37,7 @@
             <li id="resourcesLink" style="display: none;">
                 <a href="#" class="text-lg font-semibold text-gray-800 hover:text-gray-500">Resources</a>
             </li>
-            
+
         </ul>
         <!-- Profile -->
         <div class="flex items-center">
@@ -71,33 +79,32 @@
         </div>
     </div>
 </nav>
-    <!-- Content -->
-    <div class="container mx-auto px-4 py-8">
-        <!-- Resource Section -->
-        <section class="mb-8">
-            <h2 class="text-3xl font-bold mb-4">Resources</h2>
-          <!-- Category Select -->
-<div class="mb-4">
-    <label for="category" class="block text-lg font-semibold text-gray-800 mb-2">Select Category:</label>
-    <select id="category" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200">
-        <option value="">Select Category</option>
-        <option value="text book">Textbook</option>
-        <option value="teacher guide">Teacher Guide</option>
-        <option value="teacher notes">Teacher Notes</option>
-        <option value="worksheets">Worksheets</option>
-        <option value="exams">Exams</option>
-    </select>
-</div>
+  <!-- Your navigation code remains the same -->
 
-<!-- Fetch Button -->
-<button id="fetchButton" class="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600">Fetch Resources</button>
+  <!-- Registration Status Section -->
+  <div class="min-h-screen flex justify-center items-center">
+    <div class="max-w-lg w-full bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4 flex flex-col">
+      <h2 class="text-center text-2xl font-bold mb-6">Registration Status</h2>
+      <div id="registrationStatus" class="space-y-4">
+        <!-- Status content will be dynamically added here -->
+      </div>
+      <!-- Back to Home Button -->
+      <a href="./index.html" class="text-center text-blue-500 hover:underline mt-4">
+        <i class="fas fa-arrow-left"></i> Back to Home
+      </a>
+      <div id="paymentMessage" class="alert-danger hidden">
+        <i class="fas fa-exclamation-triangle"></i> Your registration is pending. Please pay the registration fee at the school office.
+      </div>
+    </div>
+  </div>
 
-<!-- Resource Cards -->
-<div id="resourceList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
-    <!-- Resources will be dynamically added here -->
-</div>
-
-<footer class="bg-white text-gray-900 py-12">
+  <div id="paymentMessage" class="alert-danger hidden">
+    <i class="fas fa-exclamation-triangle"></i> Your registration is pending. Please pay the registration fee at the school office.
+  </div>
+  
+  <!-- Footer -->
+   <!-- Footer -->
+   <footer class="bg-white text-gray-900 py-12">
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-8">
             <!-- Contact Information -->
@@ -148,48 +155,46 @@
         </div>
     </div>
 </footer>
+  <!-- Your footer code remains the same -->
 
-
-<!-- Script to Fetch and Display Resources -->
-<script>
-    document.getElementById('fetchButton').addEventListener('click', async function () {
-        const category = document.getElementById('category').value;
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
-        try {
-            const response = await fetch(`http://localhost:3000/api/resources?category=${category}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            const { resources } = await response.json();
-            const resourceList = document.getElementById('resourceList');
-            resourceList.innerHTML = ''; // Clear previous resources
-
-            if (resources.length === 0) {
-                resourceList.innerHTML = '<p class="text-gray-600">No resources found for this category.</p>';
-            } else {
-                resources.forEach(resource => {
-                    let downloadLink = '';
-                    if (resource.cloudinaryUrl) {
-                        downloadLink = resource.cloudinaryUrl;
-                    }
-                    const resourceCard = `
-                        <div class="bg-white shadow-md p-4 rounded-lg">
-                            <h3 class="text-xl font-semibold mb-2">${resource.title}</h3>
-                            <p class="text-gray-600 mb-4">${resource.description}</p>
-                            <a href="${downloadLink}" class="text-blue-500 hover:underline" target="_blank" download>
-                                <i class="fas fa-download"></i> Download
-                            </a>
-                        </div>
-                    `;
-                    resourceList.insertAdjacentHTML('beforeend', resourceCard);
-                });
-            }
-        } catch (error) {
-            console.error(error);
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+  
+      // Make API request to view registration status
+      fetch('http://localhost:3000/api/registrations/status', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const registrationStatusDiv = document.getElementById('registrationStatus');
+        const paymentMessageDiv = document.getElementById('paymentMessage');
+        if (data.registration) {
+          // If registration status is available, display it
+          const registration = data.registration;
+          registrationStatusDiv.innerHTML = `
+            <p><i class="fas fa-user"></i> <strong>Full Name:</strong> ${registration.fullName}</p>
+            <p><i class="fas fa-graduation-cap"></i> <strong>Grade:</strong> ${registration.grade}</p>
+            <p><i class="fas fa-users"></i> <strong>Last Year Section:</strong> ${registration.lastYearSection}</p>
+            <p><i class="fas fa-file-alt"></i> <strong>Last Year Grade Result:</strong> <a href="${registration.lastYearGradeResult}" target="_blank">View</a></p>
+            <p><i class="fas fa-info-circle"></i> <strong>Registration Status:</strong> ${registration.registrationStatus}</p>
+          `;
+          if (registration.registrationStatus === 'Pending') {
+            // If registration status is pending, display danger message
+            paymentMessageDiv.classList.remove('hidden');
+          }
+        } else {
+          // If registration status is not available, display a message
+          registrationStatusDiv.innerHTML = `<p>No registration found</p>`;
+        }
+      })
+      .catch(error => console.error('Error:', error));
     });
-</script>
-
+  </script>
+  
+</body>
+</html>

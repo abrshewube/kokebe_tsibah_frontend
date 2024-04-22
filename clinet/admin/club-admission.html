@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Admission Requests</title>
+</head>
+<body>
+    <h1>Club Admission Requests</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Club</th>
+                <th>Reason</th>
+                <th>Contribution</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="requests-table">
+            <!-- Club admission requests will be dynamically added here -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchClubIdByAdminId() {
+            try {
+                const response = await fetch('http://localhost:3000/api/clubs/admin-club-id', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+                return data.clubId;
+            } catch (error) {
+                console.error('Error fetching club ID by admin ID:', error);
+                throw error;
+            }
+        }
+
+        async function getClubApplications() {
+            try {
+                // Fetch the club ID by admin ID
+                const clubIdResponse = await fetch('http://localhost:3000/api/club/admin-club-id', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const clubIdData = await clubIdResponse.json();
+                const clubId = clubIdData.clubId;
+        
+                // Ensure that clubId is valid before proceeding
+                if (!clubId) {
+                    console.error('Club ID is undefined or null.');
+                    return;
+                }
+        
+                // Fetch club admission applications using the retrieved club ID
+                const applicationsResponse = await fetch(`http://localhost:3000/api/club-admissions/${clubId}/applications`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const applicationsData = await applicationsResponse.json();
+                const applications = applicationsData.applications;
+        
+                // Display fetched applications
+                const tableBody = document.getElementById('requests-table');
+                tableBody.innerHTML = '';
+        
+                applications.forEach(application => {
+                    const row = `
+                        <tr>
+                            <td>${application.user.fullName}</td>
+                            <td>${application.club.name}</td>
+                            <td>${application.reason}</td>
+                            <td>${application.contribution}</td>
+                            <td>${application.status}</td>
+                            <td>
+                                <button onclick="processApplication('${application._id}', 'approved')">Approve</button>
+                                <button onclick="processApplication('${application._id}', 'denied')">Deny</button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error('Error fetching club admission requests:', error);
+            }
+        }
+        
+        async function processApplication(applicationId, status) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/club-admissions/applications/${applicationId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+                const data = await response.json();
+                alert(data.message);
+                fetchClubApplications();
+            } catch (error) {
+                console.error('Error processing club admission request:', error);
+            }
+        }
+
+        window.onload = function() {
+            fetchClubApplications();
+        };
+    </script>
+</body>
+</html>
