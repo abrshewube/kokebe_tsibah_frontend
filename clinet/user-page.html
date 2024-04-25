@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Add custom styles here */
+    </style>
+</head>
+
+<body class="bg-gray-100">
+   
+ <!-- Navigation -->
+ <nav class="bg-white shadow-lg py-2">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+        <!-- Logo/Home Link -->
+        <a href="#" class="flex items-center">
+            <img src="./assets/images/kokebe.jpg" alt="Logo" class="h-16 mr-2"> <!-- Increased the size of the logo -->
+            <span class="text-lg font-bold text-gray-800">Kokebe Tsibah</span> <!-- Change "Your Logo" to your desired text -->
+        </a>
+        <!-- Navigation Links -->
+        <ul class="hidden md:flex space-x-6">
+            <li><a href="./index.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">Home</a></li>
+            <li><a href="./news.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">News</a></li>
+            <li><a href="#" class="text-lg font-semibold text-gray-800 hover:text-gray-500">About</a></li>
+            <li><a href="./clubs/club.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">Clubs</a></li>
+            <li id="resourcesLink" style="display: none;">
+                <a href="./resources//resources.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">Resources</a>
+            </li>
+
+        </ul>
+        <!-- Profile -->
+        <div class="flex items-center">
+            <!-- Resources Link (conditionally shown) -->
+            <script>
+                // Function to handle logout
+                function logout() {
+                    // Remove token from localStorage
+                    localStorage.removeItem("token");
+                    // Reload the page to update the UI
+                    window.location.reload();
+                }
+        
+                // Check if user is logged in using token from localStorage
+                const token = localStorage.getItem("token");
+                if (token) {
+                    // If logged in, decode token to get user info
+                    const userInfo = JSON.parse(atob(token.split('.')[1]));
+                    const username = userInfo.username;
+                    const role = userInfo.role; // Assuming the role is stored in the token
+                    const profilePic = userInfo.profilePicture; // Assuming profile picture URL is stored in the token
+                       console.log("pic is",userInfo)
+                    // Show user profile and hide login button
+                    document.write(`
+                    <div class="flex items-center">
+                        <span class="text-lg font-semibold text-gray-800 cursor-pointer relative" onclick="toggleLogout()">
+                            ${username}
+                            <ul id="logoutDropdown" class="absolute hidden bg-white shadow-md rounded-md mt-2 py-1 w-24 right-0">
+                                <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200" onclick="logout()">Logout</a></li>
+                            </ul>
+                        </span>
+                        <img src="${profilePic}" alt="Profile Picture" class="h-12 w-12 rounded-full ml-2">
+                    </div>
+                    
+                `);
+                    // Show resources link
+                    document.getElementById("resourcesLink").style.display = "block";
+        
+                    // Check if user is admin
+                    if (role === "admin") {
+                        // Add the Admin Page link to the navigation
+                        const adminPageLink = document.createElement("li");
+                        adminPageLink.innerHTML = '<a href="./admin-page.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">Admin Page</a>';
+                        const navList = document.querySelector("ul");
+                        navList.appendChild(adminPageLink);
+                    }
+                } else {
+                    // If not logged in, show login button and hide user profile
+                    document.write(`
+                    <a href="auth/login.html" class="text-gray-800 hover:text-gray-500 ml-6">
+                        <i class="fas fa-sign-in-alt text-3xl"></i>
+                        <span class="text-lg font-semibold text-gray-800 cursor-pointer">Login</span>
+                    </a>
+                `);
+                }
+                // Function to toggle logout dropdown
+                function toggleLogout() {
+                    const logoutDropdown = document.getElementById("logoutDropdown");
+                    logoutDropdown.classList.toggle("hidden");
+                }
+            </script>
+        </div>
+    </div>
+</nav>
+   
+</body>
+<div class="container mx-auto py-8 px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Club Admissions Card -->
+    <a href="./clubs/get-aaplications.html" class="block bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+            <i class="fas fa-users text-5xl text-gray-800 mb-4"></i>
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Club Admissions</h2>
+            <p class="text-gray-600">View and manage your club admissions.</p>
+        </div>
+    </a>
+
+    <!-- Registration Status Card -->
+    <a href="./registration/regsitration-status.html" class="block bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+            <i class="fas fa-tasks text-5xl text-gray-800 mb-4"></i>
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Registration Status</h2>
+            <p class="text-gray-600">Check the status of your registration.</p>
+        </div>
+    </a>
+
+    <!-- Registration Form Card -->
+    <a href="./registration/regsiter-form.htm" class="block bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+            <i class="fas fa-clipboard-list text-5xl text-gray-800 mb-4"></i>
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Registration Form</h2>
+            <p class="text-gray-600">Fill out the registration form.</p>
+        </div>
+    </a>
+</div>
+
+
+<footer class="bg-white text-gray-900 py-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-8">
+            <!-- Contact Information -->
+            <div>
+                <h2 class="text-lg font-semibold mb-2">Contact Us</h2>
+                <ul class="text-sm">
+                    <li><i class="fas fa-envelope text-blue-500"></i> <a href="mailto:info@kokebetsibah.edu.et" class="hover:text-blue-500">info@kokebetsibah.edu.et</a></li>
+                    <li><i class="fas fa-phone text-blue-500"></i> <a href="tel:+251123456789" class="hover:text-blue-500">+251 123 456 789</a></li>
+                    <li><i class="fas fa-map-marker-alt text-blue-500"></i> Addis Ababa, Ethiopia</li>
+                </ul>
+            </div>
+            <!-- Useful Links -->
+            <div>
+                <h2 class="text-lg font-semibold mb-2">Useful Links</h2>
+                <ul class="text-sm">
+                    <li><a href="#" class="hover:text-blue-500">About Us</a></li>
+                    <li><a href="#" class="hover:text-blue-500">Courses</a></li>
+                    <li><a href="#" class="hover:text-blue-500">Admission</a></li>
+                    <li><a href="#" class="hover:text-blue-500">Events</a></li>
+                    <li><a href="#" class="hover:text-blue-500">FAQs</a></li>
+                </ul>
+            </div>
+            <!-- Quick Links -->
+            <div>
+                <h2 class="text-lg font-semibold mb-2">Quick Links</h2>
+                <ul class="text-sm">
+                    <li><a href="#" class="hover:text-blue-500">Student Portal</a></li>
+                    <li><a href="#" class="hover:text-blue-500">Faculty Portal</a></li>
+                    <li><a href="#" class="hover:text-blue-500">Staff Directory</a></li>
+                    <li><a href="#" class="hover:text-blue-500">Alumni</a></li>
+                </ul>
+            </div>
+            <!-- Social Media Links -->
+            <div>
+                <h2 class="text-lg font-semibold mb-2">Follow Us</h2>
+                <ul class="flex items-center space-x-4">
+                    <li><a href="#" class="text-2xl transition duration-300" style="color: #3b5998;"><i class="fab fa-facebook"></i></a></li>
+                    <li><a href="#" class="text-2xl transition duration-300" style="color: #1da1f2;"><i class="fab fa-twitter"></i></a></li>
+                    <li><a href="#" class="text-2xl transition duration-300" style="color: #c13584;"><i class="fab fa-instagram"></i></a></li>
+                    <li><a href="#" class="text-2xl transition duration-300" style="color: #0077b5;"><i class="fab fa-linkedin"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <!-- Additional Information -->
+        <div class="mt-8 md:mt-12 text-center text-sm">
+            <p>&copy; 2024 Kokebe Tsibah Highschool. All Rights Reserved.</p>
+            <p>Designed with <i class="fas fa-heart text-red-500"></i> by Your Team</p>
+        </div>
+    </div>
+</footer>
+
+</html>
