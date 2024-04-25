@@ -127,14 +127,15 @@
                     window.location.href = '/login.html';
                     return;
                 }
-        
-              
-        
+    
                 const response = await fetch(`http://localhost:3000/api/clubs/${clubId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch club details');
+                }
                 const { club } = await response.json();
-        
+    
                 document.getElementById('clubName').innerText = club.name;
-        
+    
                 const clubDetails = document.getElementById('clubDetails');
                 clubDetails.innerHTML = `
                     <button class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
@@ -146,33 +147,33 @@
                     <div class="mb-4">
                         <h3 class="text-lg font-semibold mb-2">Details:</h3>
                         <ul class="list-disc pl-8">
-                            <li><strong>Category:</strong> ${club.category}</li>
-                            <li><strong>Established Date:</strong> ${new Date(club.establishedDate).toLocaleDateString()}</li>
-                            <li><strong>Location:</strong> ${club.location}</li>
-                            <li><strong>Website:</strong> <a href="${club.website}" target="_blank" class="text-blue-500 hover:text-blue-700">${club.website}</a></li>
-                            <li><strong>Email:</strong> ${club.email}</li>
-                            <li><strong>Contact Number:</strong> ${club.contactNumber}</li>
+                            ${club.category ? `<li><strong>Category:</strong> ${club.category}</li>` : ''}
+                            ${club.establishedDate ? `<li><strong>Established Date:</strong> ${new Date(club.establishedDate).toLocaleDateString()}</li>` : ''}
+                            ${club.location ? `<li><strong>Location:</strong> ${club.location}</li>` : ''}
+                            ${club.website ? `<li><strong>Website:</strong> <a href="${club.website}" target="_blank" class="text-blue-500 hover:text-blue-700">${club.website}</a></li>` : ''}
+                            ${club.email ? `<li><strong>Email:</strong> ${club.email}</li>` : ''}
+                            ${club.contactNumber ? `<li><strong>Contact Number:</strong> ${club.contactNumber}</li>` : ''}
                         </ul>
                     </div>
                     <div class="mb-4">
                         <h3 class="text-lg font-semibold mb-2">Events:</h3>
                         <ul class="list-disc pl-8">
-                            ${club.events.map(event => `<li>${event}</li>`).join('')}
+                            ${club.events ? club.events.map(event => `<li>${event}</li>`).join('') : ''}
                         </ul>
                     </div>
                     <div class="mb-4">
                         <h3 class="text-lg font-semibold mb-2">Social Media:</h3>
                         <div class="flex space-x-4">
-                            ${Object.entries(club.socialMediaLinks).map(([platform, link]) => `
+                            ${club.socialMediaLinks ? Object.entries(club.socialMediaLinks).map(([platform, link]) => `
                                 <a href="${link}" target="_blank">
                                     <img src="https://cdn.jsdelivr.net/npm/simple-icons@3/icons/${platform}.svg" alt="${platform}" class="social-link">
                                 </a>
-                            `).join('')}
+                            `).join('') : ''}
                         </div>
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold mb-2">Mission Statement:</h3>
-                        <p class="text-lg text-gray-700">${club.missionStatement}</p>
+                        <p class="text-lg text-gray-700">${club.missionStatement || 'Not available'}</p>
                     </div>
                     <button class="apply-button" onclick="applyToClub('${club._id}')">Apply</button>
                 `;
@@ -180,12 +181,11 @@
                 console.error('Error fetching club details:', error);
             }
         }
-        
-
+    
         function goBack() {
             window.history.back();
         }
-
+    
         async function applyToClub(clubId) {
             try {
                 const authToken = localStorage.getItem('token');
@@ -193,7 +193,7 @@
                     window.location.href = '/login.html';
                     return;
                 }
-        
+    
                 const response = await fetch('http://localhost:3000/api/users/getUserId', {
                     method: 'GET',
                     headers: {
@@ -205,20 +205,19 @@
                 }
                 const { userId } = await response.json();
                 console.log("user is", userId);
-        
+    
                 window.location.href = `apply.html?userId=${userId}&clubId=${clubId}`;
             } catch (error) {
                 console.error('Error applying to club:', error);
                 alert('An error occurred while applying to the club');
             }
         }
-        
-
-      
+    
         const urlParams = new URLSearchParams(window.location.search);
         const clubId = urlParams.get('clubId');
         fetchClubDetails(clubId);
     </script>
+    
 </body>
 
 </html>

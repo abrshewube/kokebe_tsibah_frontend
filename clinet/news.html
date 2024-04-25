@@ -10,64 +10,92 @@
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body class="bg-gray-100">
-  <!-- Header -->
-  <header class="bg-white shadow-lg py-2">
-    <div class="container mx-auto px-4 flex justify-between items-center">
+ <!-- Navigation -->
+ <nav class="bg-white shadow-lg py-2">
+  <div class="container mx-auto px-4 flex justify-between items-center">
       <!-- Logo/Home Link -->
       <a href="#" class="flex items-center">
-        <img src="./assets/images/kokebe.jpg" alt="Logo" class="h-16 mr-2"> <!-- Increased the size of the logo -->
-        <span class="text-lg font-bold text-gray-800">Kokebe Tsibah</span> <!-- Change "Your Logo" to your desired text -->
+          <img src="./assets/images/kokebe.jpg" alt="Logo" class="h-16 mr-2"> <!-- Increased the size of the logo -->
+          <span class="text-lg font-bold text-gray-800">Kokebe Tsibah</span> <!-- Change "Your Logo" to your desired text -->
       </a>
       <!-- Navigation Links -->
-      <ul class="hidden md:flex space-x-6">
-        <li><a href="./index.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">Home</a></li>
-        <li><a href="./news.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">News</a></li>
-        <li><a href="#" class="text-lg font-semibold text-gray-800 hover:text-gray-500">About</a></li>
-        <li><a href="#" class="text-lg font-semibold text-gray-800 hover:text-gray-500">Courses</a></li>
-        <li id="resourcesLink" style="display: none;">
-          <a href="./resources//resources.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">Resources</a>
-        </li>
+      <ul class="hidden md:flex space-x-6" id="navLinks">
+          <li><a href="./index.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">Home</a></li>
+          <li><a href="./news.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">News</a></li>
+          <li><a href="#" class="text-lg font-semibold text-gray-800 hover:text-gray-500">About</a></li>
+          <li><a href="./clubs/club.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">Clubs</a></li>
+          <li><a href="./user-page.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500" style="display: none;">Dashboard</a></li> <!-- Dashboard Link initially hidden -->
+          <li id="resourcesLink" style="display: none;">
+              <a href="./resources//resources.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">Resources</a>
+          </li>
       </ul>
       <!-- Profile -->
       <div class="flex items-center">
-        <!-- Resources Link (conditionally shown) -->
-        <script>
-          // Check if user is logged in using token from localStorage
-          const token = localStorage.getItem("token");
-          if (token) {
-            // If logged in, decode token to get user info
-            const userInfo = JSON.parse(atob(token.split('.')[1]));
-            const username = userInfo.username;
-            // Show user profile and hide login button
-            document.write(`
-              <span class="text-lg font-semibold text-gray-800 cursor-pointer relative ml-6" onclick="toggleLogout()">
-                ${username}
-                <i class="fas fa-user-circle text-3xl text-gray-800"></i>
-                <ul id="logoutDropdown" class="absolute hidden bg-white shadow-md rounded-md mt-2 py-1 w-24 right-0">
-                  <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200" onclick="logout()">Logout</a></li>
-                </ul>
-              </span>
-            `);
-            // Show resources link
-            document.getElementById("resourcesLink").style.display = "block";
-          } else {
-            // If not logged in, show login button and hide user profile
-            document.write(`
-              <a href="auth/login.html" class="text-gray-800 hover:text-gray-500 ml-6">
-                <i class="fas fa-sign-in-alt text-3xl"></i>
-                <span class="text-lg font-semibold text-gray-800 cursor-pointer">Login</span>
-              </a>
-            `);
-          }
-          // Function to toggle logout dropdown
-          function toggleLogout() {
-            const logoutDropdown = document.getElementById("logoutDropdown");
-            logoutDropdown.classList.toggle("hidden");
-          }
-        </script>
+          <!-- JavaScript to generate profile and navigation links -->
+          <script>
+              // Function to handle logout
+              function logout() {
+                  // Remove token from localStorage
+                  localStorage.removeItem("token");
+                  // Reload the page to update the UI
+                  window.location.reload();
+              }
+
+              // Check if user is logged in using token from localStorage
+              const token = localStorage.getItem("token");
+              if (token) {
+                  // If logged in, decode token to get user info
+                  const userInfo = JSON.parse(atob(token.split('.')[1]));
+                  const username = userInfo.username;
+                  const role = userInfo.role; // Assuming the role is stored in the token
+                  const profilePic = userInfo.profilePicture; // Assuming profile picture URL is stored in the token
+
+                  // Show user profile and hide login button
+                  document.write(`
+                      <div class="flex items-center">
+                          <span class="text-lg font-semibold text-gray-800 cursor-pointer relative" onclick="toggleLogout()">
+                              ${username}
+                              <ul id="logoutDropdown" class="absolute hidden bg-white shadow-md rounded-md mt-2 py-1 w-24 right-0">
+                                  <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200" onclick="logout()">Logout</a></li>
+                              </ul>
+                          </span>
+                          <img src="${profilePic}" alt="Profile Picture" class="h-12 w-12 rounded-full ml-2">
+                      </div>
+                  `);
+
+                  // Show resources link
+                  document.getElementById("resourcesLink").style.display = "block";
+
+                  // Show Dashboard link
+                  document.querySelector('a[href="./user-page.html"]').style.display = "block";
+
+                  // Check if user is admin
+                  if (role === "admin") {
+                      // Add the Admin Page link to the navigation
+                      const adminPageLink = document.createElement("li");
+                      adminPageLink.innerHTML = '<a href="./admin-page.html" class="text-lg font-semibold text-gray-800 hover:text-gray-500">Admin Page</a>';
+                      const navList = document.querySelector("#navLinks");
+                      navList.insertBefore(adminPageLink, navList.childNodes[navList.childNodes.length - 1]);
+                  }
+              } else {
+                  // If not logged in, show login button and hide user profile
+                  document.write(`
+                      <a href="auth/login.html" class="text-gray-800 hover:text-gray-500 ml-6">
+                          <i class="fas fa-sign-in-alt text-3xl"></i>
+                          <span class="text-lg font-semibold text-gray-800 cursor-pointer">Login</span>
+                      </a>
+                  `);
+              }
+
+              // Function to toggle logout dropdown
+              function toggleLogout() {
+                  const logoutDropdown = document.getElementById("logoutDropdown");
+                  logoutDropdown.classList.toggle("hidden");
+              }
+          </script>
       </div>
-    </div>
-  </header>
+  </div>
+</nav>
 
   <!-- Main Content -->
   <div class="container mx-auto py-8 px-4">

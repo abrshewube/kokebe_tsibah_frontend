@@ -10,6 +10,8 @@
 <body class="bg-gray-100">
   <div class="container mx-auto py-8 px-4">
     <h1 class="text-3xl font-bold mb-4 text-center">Create News</h1>
+    <!-- Back Button -->
+    <button onclick="goBack()" class="bg-gray-500 text-white py-2 px-4 rounded-md mb-4">Back</button>
     <div class="max-w-lg mx-auto bg-white rounded-lg shadow-md overflow-hidden">
       <form id="createNewsForm" class="px-6 py-4">
         <div class="mb-4">
@@ -78,6 +80,11 @@
     // Attach form submission event listener
     const createNewsForm = document.getElementById('createNewsForm');
     createNewsForm.addEventListener('submit', handleSubmit);
+
+    // Function to go back
+    function goBack() {
+      window.history.back();
+    }
   </script>
 </body>
 </html>

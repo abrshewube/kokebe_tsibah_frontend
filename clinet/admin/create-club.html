@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Club</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .input-field {
+            border: 2px solid #3B82F6;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #2563EB;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<div class="container mx-auto py-8">
+    <div class="max-w-md mx-auto bg-white p-6 rounded shadow-md">
+        <div class="flex items-center justify-between mb-6">
+            <a href="#" onclick="history.go(-1)" class="text-blue-500 hover:text-blue-600"><i class="fas fa-arrow-left"></i> Back</a>
+            <h2 class="text-2xl font-semibold">Create a Club</h2>
+            <div></div>
+        </div>
+        <form id="create-club-form" class="space-y-6">
+            <div>
+                <h3 class="text-lg font-semibold mb-2">Basic Information</h3>
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="name" name="name" class="input-field mt-1 block w-full rounded-md">
+                </div>
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea id="description" name="description" rows="3" class="input-field mt-1 block w-full rounded-md"></textarea>
+                </div>
+                <div>
+                    <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                    <input type="text" id="category" name="category" class="input-field mt-1 block w-full rounded-md">
+                </div>
+                <div>
+                    <label for="establishedDate" class="block text-sm font-medium text-gray-700">Established Date</label>
+                    <input type="date" id="establishedDate" name="establishedDate" class="input-field mt-1 block w-full rounded-md">
+                </div>
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+                    <input type="text" id="location" name="location" class="input-field mt-1 block w-full rounded-md">
+                </div>
+                <div>
+                    <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
+                    <input type="text" id="website" name="website" class="input-field mt-1 block w-full rounded-md">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" class="input-field mt-1 block w-full rounded-md">
+                </div>
+                <div>
+                    <label for="contactNumber" class="block text-sm font-medium text-gray-700">Contact Number</label>
+                    <input type="text" id="contactNumber" name="contactNumber" class="input-field mt-1 block w-full rounded-md">
+                </div>
+                <div>
+                    <label for="facebook" class="block text-sm font-medium text-gray-700">Facebook</label>
+                    <input type="text" id="facebook" name="facebook" class="input-field mt-1 block w-full rounded-md">
+                </div>
+                <div>
+                    <label for="twitter" class="block text-sm font-medium text-gray-700">Twitter</label>
+                    <input type="text" id="twitter" name="twitter" class="input-field mt-1 block w-full rounded-md">
+                </div>
+                <div>
+                    <label for="instagram" class="block text-sm font-medium text-gray-700">Instagram</label>
+                    <input type="text" id="instagram" name="instagram" class="input-field mt-1 block w-full rounded-md">
+                </div>
+                <div>
+                    <label for="coverPhotoUrl" class="block text-sm font-medium text-gray-700">Cover Photo URL</label>
+                    <input type="text" id="coverPhotoUrl" name="coverPhotoUrl" class="input-field mt-1 block w-full rounded-md">
+                </div>
+            </div>
+            <div>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <i class="fas fa-plus-circle mr-2"></i>
+                    Create Club
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('create-club-form');
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            // Get token from localStorage
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('Authentication token not found. Please login first.');
+                return;
+            }
+
+            // Collect data from form inputs
+            const data = {};
+            const inputs = form.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                data[input.name] = input.value;
+            });
+
+            console.log(data)
+            try {
+                const response = await fetch('http://localhost:3000/api/clubs', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+
+                if (!response.ok) {
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage);
+                }
+
+                const responseData = await response.json();
+                alert('Club created successfully');
+                console.log(responseData);
+                // Redirect or perform any other action upon successful creation
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to create club. Please try again.');
+            }
+        });
+    });
+</script>
+
+
+</body>
+</html>
